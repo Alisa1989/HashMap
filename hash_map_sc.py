@@ -120,16 +120,17 @@ class HashMap:
         # if self._buckets[mapped_index].length() == 0:
         #     self._buckets[mapped_index].insert(key, value)
 
-        # GOOD BUT WAITING TO DEFINE other methods
         if self. table_load() >= 1.0:
             self.resize_table(self._capacity * 2)     #assuming doubling
 
-        if self._buckets[mapped_index].contains(key):
-            return
-        else:
-            self._buckets[mapped_index].insert(key, value)
-            # print("in put k=", key, "v=", value)
-            self._size += 1
+        for i in self._buckets[mapped_index]:
+            if i.key == key:
+                i.value = value
+                return
+
+        self._buckets[mapped_index].insert(key, value)
+        # print("in put k=", key, "v=", value)
+        self._size += 1
 
     # print("bucket at the index length", self._buckets[mapped_index].length())
         # print("bucket at the index", self._buckets[mapped_index]._head)
@@ -280,38 +281,35 @@ def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
 
 if __name__ == "__main__":
 
-    # print("\nPDF - put example 1")
-    # print("-------------------")
-    # m = HashMap(53, hash_function_1)
-    # # m = HashMap(10, hash_function_1)
-    # for i in range(150):
-    # # for i in range(10):
-    #     m.put('str' + str(i), i * 100)
-    #     if i % 25 == 24:
-    #         # print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
-    #         print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    print("\nPDF - put example 1")
+    print("-------------------")
+    m = HashMap(53, hash_function_1)
+    for i in range(150):
+        m.put('str' + str(i), i * 100)
+        if i % 25 == 24:
+            print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
 
-    # print("\nPDF - put example 2")
-    # print("-------------------")
-    # m = HashMap(41, hash_function_2)
-    # for i in range(50):
-    #     m.put('str' + str(i // 3), i * 100)
-    #     if i % 10 == 9:
-    #         print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
-    #
-    # print("\nPDF - empty_buckets example 1")
-    # print("-----------------------------")
-    # m = HashMap(101, hash_function_1)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key1', 10)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key2', 20)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key1', 30)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key4', 40)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    #
+    print("\nPDF - put example 2")
+    print("-------------------")
+    m = HashMap(41, hash_function_2)
+    for i in range(50):
+        m.put('str' + str(i // 3), i * 100)
+        if i % 10 == 9:
+            print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
+
+    print("\nPDF - empty_buckets example 1")
+    print("-----------------------------")
+    m = HashMap(101, hash_function_1)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key1', 10)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key2', 20)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key1', 30)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key4', 40)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+
     # print("\nPDF - empty_buckets example 2")
     # print("-----------------------------")
     # m = HashMap(53, hash_function_1)
