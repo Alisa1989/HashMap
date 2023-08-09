@@ -112,13 +112,6 @@ class HashMap:
         Creates a new key/value pair if the key doesn't exist
         """
         mapped_index = self._hash_function(key) % self._capacity
-        # print("mapped index", mapped_index, "capacity", self._capacity)
-        # print("buckets length AKA capacity", self._buckets.length())
-        # print("values held", self.get_size())
-        # print("bucket at the index", self._buckets[mapped_index])
-        # print("bucket at the index length", self._buckets[mapped_index].length())
-        # if self._buckets[mapped_index].length() == 0:
-        #     self._buckets[mapped_index].insert(key, value)
 
         if self. table_load() >= 1.0:
             self.resize_table(self._capacity * 2)     #assuming doubling
@@ -131,9 +124,6 @@ class HashMap:
         self._buckets[mapped_index].insert(key, value)
         # print("in put k=", key, "v=", value)
         self._size += 1
-
-    # print("bucket at the index length", self._buckets[mapped_index].length())
-        # print("bucket at the index", self._buckets[mapped_index]._head)
 
     def empty_buckets(self) -> int:
         """
@@ -202,7 +192,7 @@ class HashMap:
             self._buckets.append(LinkedList())
 
         for i in range(exiting_pairs.length()):
-            # print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
+            print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
             self.put(exiting_pairs[i][0], exiting_pairs[i][1])
 
     def get(self, key: str):    # PASSES LOCAL TESTS
@@ -231,7 +221,6 @@ class HashMap:
 
         if self._buckets[mapped_index].contains(key):
             return True
-
         return False
 
     def remove(self, key: str) -> None:     # PASSES LOCAL TESTS
@@ -257,14 +246,6 @@ class HashMap:
                 for j in self._buckets[index]:
                     # print(" j = ", j, " k = ", j.key, " v= ", j.value)
                     new_array.append((j.key, j.value))
-
-                #     self._buckets[index][j]
-
-                # curr_node = self._buckets[index]
-                # while curr_node.next is True:
-                #     new_array.append((curr_node.key, curr_node.value))
-                #     curr_node = curr_node.next
-
         return new_array
 
 
