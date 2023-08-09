@@ -16,6 +16,14 @@ I was initially using get_keys_and_values, init, and put in resize table
 
 I was told not to use init or get_keys_and_values, but to keep put
 Now using put without get_keys_and_values makes no sense to me
+
+
+----
+so if we have 10 elements in the hash map and we ask to resize to 1,
+you want it to contain the put method so it keeps resizing itself 
+until it can contain all the elements 
+
+
 """
 
 
@@ -104,6 +112,7 @@ class HashMap:
         Creates a new key/value pair if the key doesn't exist
         """
         mapped_index = self._hash_function(key) % self._capacity
+        # print("mapped index", mapped_index, "capacity", self._capacity)
         # print("buckets length AKA capacity", self._buckets.length())
         # print("values held", self.get_size())
         # print("bucket at the index", self._buckets[mapped_index])
@@ -162,36 +171,38 @@ class HashMap:
 
         # OPTION 1
         # make a hash map out of the new_array
-        new_array = DynamicArray()
-        new_size = 0
-        for _ in range(new_capacity):
-            new_array.append(LinkedList())
-
-        for index in range(self._capacity):
-            if self._buckets[index].length() != 0:
-                for j in self._buckets[index]:
-                    # print(" j = ", j, " k = ", j.key, " v= ", j.value)
-                    # new_array.append((j.key, j.value))
-                    mapped_index = self._hash_function(j.key) % new_capacity
-                    new_array[mapped_index].insert(j.key, j.value)
-                    new_size += 1
-
-        self._buckets = new_array
-        self._capacity = new_capacity
-        self._size = new_size
+        # new_array = DynamicArray()
+        # new_size = 0
+        # for _ in range(new_capacity):
+        #     new_array.append(LinkedList())
+        #
+        # for index in range(self._capacity):
+        #     if self._buckets[index].length() != 0:
+        #         for j in self._buckets[index]:
+        #             # print(" j = ", j, " k = ", j.key, " v= ", j.value)
+        #             # new_array.append((j.key, j.value))
+        #             mapped_index = self._hash_function(j.key) % new_capacity
+        #             new_array[mapped_index].insert(j.key, j.value)
+        #             new_size += 1
+        #
+        # self._buckets = new_array
+        # self._capacity = new_capacity
+        # self._size = new_size
 
         # # OPTION 2
-        # # transfer over key/values and rehash
-        # # copy
-        # exiting_pairs = self.get_keys_and_values()              # too expensive
-        # # change size
-        # self._capacity = new_capacity
-        # self._size = 0
-        # self._buckets = DynamicArray()
-        #
-        # for i in range(exiting_pairs.length()):
-        #     print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
-        #     self.put(exiting_pairs[i][0], exiting_pairs[i][1])
+        # transfer over key/values and rehash
+        # copy
+        exiting_pairs = self.get_keys_and_values()              # too expensive
+        # change size
+        self._capacity = new_capacity
+        self._size = 0
+        self._buckets = DynamicArray()
+        for _ in range(self._capacity):
+            self._buckets.append(LinkedList())
+
+        for i in range(exiting_pairs.length()):
+            # print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
+            self.put(exiting_pairs[i][0], exiting_pairs[i][1])
 
     def get(self, key: str):    # PASSES LOCAL TESTS
         """
@@ -231,6 +242,7 @@ class HashMap:
         for j in self._buckets[mapped_index]:
             if key == j.key:
                 self._buckets[mapped_index].remove(key)
+                self._size -= 1
 
     def get_keys_and_values(self) -> DynamicArray:      # PASSES LOCAL TESTS
         """
@@ -361,6 +373,7 @@ if __name__ == "__main__":
     #
     print("\nPDF - resize example 2")
     print("----------------------")
+    # m = HashMap(11, hash_function_2)
     m = HashMap(75, hash_function_2)
     keys = [i for i in range(1, 1000, 13)]
     for key in keys:
@@ -427,28 +440,28 @@ if __name__ == "__main__":
     #     result &= not m.contains_key(str(key + 1))
     # print(result)
 
-    # print("\nPDF - remove example 1")
-    # print("----------------------")
-    # m = HashMap(53, hash_function_1)
-    # print(m.get('key1'))
-    # m.put('key1', 10)
-    # print(m.get('key1'))
-    # m.remove('key1')
-    # print(m.get('key1'))
-    # m.remove('key4')
+    print("\nPDF - remove example 1")
+    print("----------------------")
+    m = HashMap(53, hash_function_1)
+    print(m.get('key1'))
+    m.put('key1', 10)
+    print(m.get('key1'))
+    m.remove('key1')
+    print(m.get('key1'))
+    m.remove('key4')
 
-    # print("\nPDF - get_keys_and_values example 1")
-    # print("------------------------")
-    # m = HashMap(11, hash_function_2)
-    # for i in range(1, 6):
-    #     m.put(str(i), str(i * 10))
-    # print(m.get_keys_and_values())
-    #
-    # m.put('20', '200')
-    # m.remove('1')
-    # m.resize_table(2)
-    # print(m.get_keys_and_values())
-    #
+    print("\nPDF - get_keys_and_values example 1")
+    print("------------------------")
+    m = HashMap(11, hash_function_2)
+    for i in range(1, 6):
+        m.put(str(i), str(i * 10))
+    print(m.get_keys_and_values())
+
+    m.put('20', '200')
+    m.remove('1')
+    m.resize_table(2)
+    print(m.get_keys_and_values())
+
     # print("\nPDF - find_mode example 1")
     # print("-----------------------------")
     # da = DynamicArray(["apple", "apple", "grape", "melon", "peach"])
