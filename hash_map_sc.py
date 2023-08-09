@@ -192,7 +192,7 @@ class HashMap:
             self._buckets.append(LinkedList())
 
         for i in range(exiting_pairs.length()):
-            print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
+            # print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
             self.put(exiting_pairs[i][0], exiting_pairs[i][1])
 
     def get(self, key: str):    # PASSES LOCAL TESTS
