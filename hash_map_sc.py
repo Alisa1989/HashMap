@@ -122,7 +122,7 @@ class HashMap:
                 return
 
         self._buckets[mapped_index].insert(key, value)
-        # print("in put k=", key, "v=", value)
+        print("in put k=", key, "v=", value)
         self._size += 1
 
     def empty_buckets(self) -> int:
