@@ -111,10 +111,10 @@ class HashMap:
         Updates existing value if the key already exists
         Creates a new key/value pair if the key doesn't exist
         """
-        mapped_index = self._hash_function(key) % self._capacity
-
         if self. table_load() >= 1.0:
             self.resize_table(self._capacity * 2)     #assuming doubling
+
+        mapped_index = self._hash_function(key) % self._capacity
 
         for i in self._buckets[mapped_index]:           # if the key exists substitute the value
             if i.key == key:
@@ -159,8 +159,6 @@ class HashMap:
             return
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
-
-        print("new capacity", new_capacity)
 
         # OPTION 1
         # make a hash map out of the new_array
@@ -273,14 +271,14 @@ if __name__ == "__main__":
             print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
 
 
-    # print("\nPDF - put example 2")
-    # print("-------------------")
-    # m = HashMap(41, hash_function_2)
-    # for i in range(50):
-    #     m.put('str' + str(i // 3), i * 100)
-    #     if i % 10 == 9:
-    #         print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())#
-    #
+    print("\nPDF - put example 2")
+    print("-------------------")
+    m = HashMap(41, hash_function_2)
+    for i in range(50):
+        m.put('str' + str(i // 3), i * 100)
+        if i % 10 == 9:
+            print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())#
+
 
     # print("\nPDF - put customized example")
     # print("-------------------")
@@ -288,7 +286,7 @@ if __name__ == "__main__":
     #           ("key637", 91), ("key782", -391), ("key378", 35), ("key839", 546), ("key304", 481),
     #           ("key134", 598), ("key839", -260)]
     #
-    # m = HashMap(41, hash_function_2)
+    # m = HashMap(23, hash_function_2)
     # for i in range(len(values)):
     #     m.put(values[i][0], values[i][1])
     # print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
