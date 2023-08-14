@@ -1,30 +1,14 @@
-# Name:
-# OSU Email:
+# Name: Alexandre Steinhauslin
+# OSU Email: steinhal@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description: use a dynamic array to store your hash table and implement chaining for collision
-# resolution using a singly linked list.
+# Assignment: HashMap Implementation
+# Due Date: 8/15/2023
+# Description: using a dynamic array to store the hash table and implementing
+# chaining for collision resolution using a singly linked list.
 
 
 from a6_include import (DynamicArray, LinkedList,
                         hash_function_1, hash_function_2)
-
-
-"""
-I was initially using get_keys_and_values, init, and put in resize table
-
-I was told not to use init or get_keys_and_values, but to keep put
-Now using put without get_keys_and_values makes no sense to me
-
-
-----
-so if we have 10 elements in the hash map and we ask to resize to 1,
-you want it to contain the put method so it keeps resizing itself 
-until it can contain all the elements 
-
-
-"""
 
 
 class HashMap:
@@ -112,7 +96,7 @@ class HashMap:
         Creates a new key/value pair if the key doesn't exist
         """
         if self. table_load() >= 1.0:
-            self.resize_table(self._capacity * 2)     #assuming doubling
+            self.resize_table(self._capacity * 2)
 
         mapped_index = self._hash_function(key) % self._capacity
 
@@ -150,7 +134,7 @@ class HashMap:
             self._buckets.append(LinkedList())
         self._size = 0
 
-    def resize_table(self, new_capacity: int) -> None:          # FAILS local tests
+    def resize_table(self, new_capacity: int) -> None:          # PASSES local tests
         """
         Receives new_capacity
         Changes the capacity of the internal hash table
@@ -183,7 +167,7 @@ class HashMap:
         # # OPTION 2
         # transfer over key/values and rehash
         # copy
-        exiting_pairs = self.get_keys_and_values()              # too expensive
+        existing_pairs = self.get_keys_and_values()              # too expensive
         # change size
         self._capacity = new_capacity
         self._size = 0
@@ -191,9 +175,9 @@ class HashMap:
         for _ in range(self._capacity):
             self._buckets.append(LinkedList())
 
-        for i in range(exiting_pairs.length()):
-            # print("in resize table, key:", exiting_pairs[i][0], "value:", exiting_pairs[i][1])
-            self.put(exiting_pairs[i][0], exiting_pairs[i][1])
+        for i in range(existing_pairs.length()):
+            # print("in resize table, key:", existing_pairs[i][0], "value:", existing_pairs[i][1])
+            self.put(existing_pairs[i][0], existing_pairs[i][1])
 
     def get(self, key: str):    # PASSES LOCAL TESTS
         """
@@ -251,34 +235,52 @@ class HashMap:
 
 def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
     """
-    TODO: Write this implementation
+    Receives a Dynamic array
+    Returns a tuple containing the modes ina dynamic array,
+     and its/their frequency
     """
-    # if you'd like to use a hash map,
-    # use this instance of your Separate Chaining HashMap
     map = HashMap()
+    for i in range(da.length()):
+        if map.contains_key(da[i]):     # if key exists increment value
+            value = map.get(da[i])
+            map.put(da[i], value + 1)   # if key doesn't add node and value 1
+        else:
+            map.put(da[i], 1)
+
+    modes = DynamicArray()
+    frequency = 0
+    pairs = map.get_keys_and_values()
+
+    for i in range(pairs.length()):
+        if pairs[i][1] > frequency:     # if it has a higher frequency
+            frequency = pairs[i][1]
+            modes = DynamicArray()
+            modes.append(pairs[i][0])
+        elif pairs[i][1] == frequency:  # if it has the same frequency
+            modes.append(pairs[i][0])
+
+    return modes, frequency
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #
 
 if __name__ == "__main__":
 
-    print("\nPDF - put example 1")
-    print("-------------------")
-    m = HashMap(53, hash_function_1)
-    for i in range(150):
-        m.put('str' + str(i), i * 100)
-        if i % 25 == 24:
-            print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
-
-
-    print("\nPDF - put example 2")
-    print("-------------------")
-    m = HashMap(41, hash_function_2)
-    for i in range(50):
-        m.put('str' + str(i // 3), i * 100)
-        if i % 10 == 9:
-            print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())#
-
+    # print("\nPDF - put example 1")
+    # print("-------------------")
+    # m = HashMap(53, hash_function_1)
+    # for i in range(150):
+    #     m.put('str' + str(i), i * 100)
+    #     if i % 25 == 24:
+    #         print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
+    #
+    # print("\nPDF - put example 2")
+    # print("-------------------")
+    # m = HashMap(41, hash_function_2)
+    # for i in range(50):
+    #     m.put('str' + str(i // 3), i * 100)
+    #     if i % 10 == 9:
+    #         print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())#
 
     # print("\nPDF - put customized example")
     # print("-------------------")
@@ -456,21 +458,21 @@ if __name__ == "__main__":
     # m.resize_table(2)
     # print(m.get_keys_and_values())
 
-    # print("\nPDF - find_mode example 1")
-    # print("-----------------------------")
-    # da = DynamicArray(["apple", "apple", "grape", "melon", "peach"])
-    # mode, frequency = find_mode(da)
-    # print(f"Input: {da}\nMode : {mode}, Frequency: {frequency}")
-    #
-    # print("\nPDF - find_mode example 2")
-    # print("-----------------------------")
-    # test_cases = (
-    #     ["Arch", "Manjaro", "Manjaro", "Mint", "Mint", "Mint", "Ubuntu", "Ubuntu", "Ubuntu"],
-    #     ["one", "two", "three", "four", "five"],
-    #     ["2", "4", "2", "6", "8", "4", "1", "3", "4", "5", "7", "3", "3", "2"]
-    # )
-    #
-    # for case in test_cases:
-    #     da = DynamicArray(case)
-    #     mode, frequency = find_mode(da)
-    #     print(f"Input: {da}\nMode : {mode}, Frequency: {frequency}\n")
+    print("\nPDF - find_mode example 1")
+    print("-----------------------------")
+    da = DynamicArray(["apple", "apple", "grape", "melon", "peach"])
+    mode, frequency = find_mode(da)
+    print(f"Input: {da}\nMode : {mode}, Frequency: {frequency}")
+
+    print("\nPDF - find_mode example 2")
+    print("-----------------------------")
+    test_cases = (
+        ["Arch", "Manjaro", "Manjaro", "Mint", "Mint", "Mint", "Ubuntu", "Ubuntu", "Ubuntu"],
+        ["one", "two", "three", "four", "five"],
+        ["2", "4", "2", "6", "8", "4", "1", "3", "4", "5", "7", "3", "3", "2"]
+    )
+
+    for case in test_cases:
+        da = DynamicArray(case)
+        mode, frequency = find_mode(da)
+        print(f"Input: {da}\nMode : {mode}, Frequency: {frequency}\n")
