@@ -1,10 +1,10 @@
 # Name: Alexandre Steinhauslin
 # OSU Email: steinhal@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description: Use a dynamic array to store your hash table, and implement Open Addressing
-# with Quadratic Probing for collision resolution inside that dynamic array
+# Assignment: HashMap Implementation
+# Due Date: 8/15/2023
+# Description: A hash table that uses a dynamic array to store its entries,
+# and implements Open Addressing with Quadratic Probing for collision resolution
 
 from a6_include import (DynamicArray, DynamicArrayException, HashEntry,
                         hash_function_1, hash_function_2)
@@ -86,12 +86,13 @@ class HashMap:
 
     # ------------------------------------------------------------------ #
 
-    def put(self, key: str, value: object) -> None:
+    def put(self, key: str, value: object) -> None:     # Passes local tests
         """
-        TODO: Write this implementation
+        Receives a key and value pair
+        Adds the pair to the hash map
         """
         if self.table_load() >= 0.5:
-            self.resize_table(self._capacity * 2)  # assuming doubling
+            self.resize_table(self._capacity * 2)  # doubling capacity
 
         hashed_key = self._hash_function(key)
         j = 0
@@ -100,47 +101,49 @@ class HashMap:
         while self._buckets[mapped_index] is not None:     # while the slot is full
             if self._buckets[mapped_index].key == key:          # key exists
                 self._buckets[mapped_index].value = value
-                if self._buckets[mapped_index].is_tumbstone:
-                    self._buckets[mapped_index].is_tumbstone = False
+                if self._buckets[mapped_index].is_tombstone:
+                    self._buckets[mapped_index].is_tombstone = False
                     self._size += 1
                 return
             j += 1
             # quadratic probing
             mapped_index = (hashed_key + j**2) % self._capacity
-
         # empty slot
         new_entry = HashEntry(key, value)
         self._buckets[mapped_index] = new_entry
         self._size += 1
 
-    def table_load(self) -> float:
+    def table_load(self) -> float:  # Passes local tests
         """
         Returns the current hash table load factor
         """
         return self._size / self._capacity
 
-    def empty_buckets(self) -> int:
+    def empty_buckets(self) -> int: # Passes local tests
         """
-        TODO: Write this implementation
+        Returns the number of empty buckets
+        Tombstone entries are considered empty
         """
         counter = 0
 
         for i in range(self._capacity):
-            if self._buckets[i] is None: # or is a tombstone
+            if self._buckets[i] is None or self._buckets[i].is_tombstone:
                 counter += 1
-
         return counter
 
     def resize_table(self, new_capacity: int) -> None:
         """
-        TODO: Write this implementation
+        Receives potential new_capacity
+        Resizes hash map with new_capacity
         """
-        if new_capacity < 1 or new_capacity < self._size:
+        # if new_capacity < 1
+        if new_capacity < self._size:
             return
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
 
         existing_pairs = self.get_keys_and_values()
+
         # change size
         self._capacity = new_capacity
         self._size = 0
@@ -149,30 +152,62 @@ class HashMap:
             self._buckets.append(None)
 
         for i in range(existing_pairs.length()):
-            # print("in resize table, key:", existing_pairs[i][0], "value:", existing_pairs[i][1])
             self.put(existing_pairs[i][0], existing_pairs[i][1])
 
     def get(self, key: str) -> object:
         """
-        TODO: Write this implementation
+        Receives a key
+        Returns its value
         """
-        pass
+        hashed_key = self._hash_function(key)
+        j = 0
+        mapped_index = (hashed_key + j ** 2) % self._capacity
+
+        # while the slot is full
+        while self._buckets[mapped_index] is not None:
+            if self._buckets[mapped_index].key == key and not \
+                    self._buckets[mapped_index].is_tombstone:  # key exists
+                return self._buckets[mapped_index].value
+            j += 1
+            mapped_index = (hashed_key + j ** 2) % self._capacity   # quadratic
 
     def contains_key(self, key: str) -> bool:
         """
-        TODO: Write this implementation
+        Receives a key
+        Returns True if the key is in the hash map, False otherwise
         """
-        pass
+        hashed_key = self._hash_function(key)
+        j = 0
+        mapped_index = (hashed_key + j ** 2) % self._capacity
+
+        while self._buckets[mapped_index] is not None:  # while the slot is full
+            if self._buckets[mapped_index].key == key and not self._buckets[mapped_index].is_tombstone:  # key exists
+                return True
+            j += 1
+            mapped_index = (hashed_key + j ** 2) % self._capacity  # quadratic probing
+        return False
 
     def remove(self, key: str) -> None:
         """
-        TODO: Write this implementation
+        Receives key
+        Removes the pair by setting is_tombstone to True
         """
-        pass
+        hashed_key = self._hash_function(key)
+        j = 0
+        mapped_index = (hashed_key + j ** 2) % self._capacity
+
+        # while the slot is full
+        while self._buckets[mapped_index] is not None:
+            if self._buckets[mapped_index].key == key and not \
+                    self._buckets[mapped_index].is_tombstone:  # key exists
+                self._buckets[mapped_index].is_tombstone = True
+                return
+            j += 1
+            mapped_index = (hashed_key + j ** 2) % self._capacity  # quadratic
 
     def clear(self) -> None:
         """
-        TODO: Write this implementation
+        Clears the Hash map
         """
         self._buckets = DynamicArray()
         for _ in range(self._capacity):
@@ -181,50 +216,56 @@ class HashMap:
 
     def get_keys_and_values(self) -> DynamicArray:
         """
-        TODO: Write this implementation
+        Returns a Dynamic Array containing all key/value pairs as tuples
         """
         new_array = DynamicArray()
 
         for index in range(self._capacity):
             if self._buckets[index] is not None:
-                if self._buckets[index].is_tombstone:
-                    new_array.append(self._buckets[index].key, self._buckets[index].value)
+                if not self._buckets[index].is_tombstone:
+                    new_array.append((self._buckets[index].key,
+                                      self._buckets[index].value))
         return new_array
 
     def __iter__(self):
         """
-        TODO: Write this implementation
+        Enables hash map to iterate across itself
         """
-        pass
-        # self._index = 0
-        # return self
+        # pass
+        self._index = 0
+        return self
 
     def __next__(self):
         """
-        TODO: Write this implementation
+        Will return the next item in the hash map
         """
-        pass
-        # try:
-        #     value = self._buckets[self._index]
-        # except DynamicArrayException:
-        #     raise StopIteration
-        #
-        # self._index += 1
-        # return value
+        # pass
+        while self._buckets[self._index] is None or self._buckets[self._index].is_tombstone:
+            self._index += 1
+            if self._index >= self._capacity:
+                raise StopIteration
+
+        try:
+            value = self._buckets[self._index]
+        except DynamicArrayException:
+            raise StopIteration
+
+        self._index += 1
+        return value
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #
 
 if __name__ == "__main__":
 
-    print("\nPDF - put example 1")
-    print("-------------------")
-    m = HashMap(53, hash_function_1)
-    for i in range(150):
-        m.put('str' + str(i), i * 100)
-        if i % 25 == 24:
-            print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
-
+    # print("\nPDF - put example 1")
+    # print("-------------------")
+    # m = HashMap(53, hash_function_1)
+    # for i in range(150):
+    #     m.put('str' + str(i), i * 100)
+    #     if i % 25 == 24:
+    #         print(m.empty_buckets(), round(m.table_load(), 2), m.get_size(), m.get_capacity())
+    #
     # print("\nPDF - put example 2")
     # print("-------------------")
     # m = HashMap(41, hash_function_2)
@@ -252,26 +293,26 @@ if __name__ == "__main__":
     #     if i % 10 == 0:
     #         print(round(m.table_load(), 2), m.get_size(), m.get_capacity())
     #
-    # print("\nPDF - empty_buckets example 1")
-    # print("-----------------------------")
-    # m = HashMap(101, hash_function_1)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key1', 10)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key2', 20)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key1', 30)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    # m.put('key4', 40)
-    # print(m.empty_buckets(), m.get_size(), m.get_capacity())
-    #
-    # print("\nPDF - empty_buckets example 2")
-    # print("-----------------------------")
-    # m = HashMap(53, hash_function_1)
-    # for i in range(150):
-    #     m.put('key' + str(i), i * 100)
-    #     if i % 30 == 0:
-    #         print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    print("\nPDF - empty_buckets example 1")
+    print("-----------------------------")
+    m = HashMap(101, hash_function_1)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key1', 10)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key2', 20)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key1', 30)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+    m.put('key4', 40)
+    print(m.empty_buckets(), m.get_size(), m.get_capacity())
+
+    print("\nPDF - empty_buckets example 2")
+    print("-----------------------------")
+    m = HashMap(53, hash_function_1)
+    for i in range(150):
+        m.put('key' + str(i), i * 100)
+        if i % 30 == 0:
+            print(m.empty_buckets(), m.get_size(), m.get_capacity())
     #
     # print("\nPDF - resize example 1")
     # print("----------------------")
@@ -401,23 +442,23 @@ if __name__ == "__main__":
     # m.remove('1')
     # m.resize_table(12)
     # print(m.get_keys_and_values())
-    #
-    # print("\nPDF - __iter__(), __next__() example 1")
-    # print("---------------------")
-    # m = HashMap(10, hash_function_1)
-    # for i in range(5):
-    #     m.put(str(i), str(i * 10))
-    # print(m)
-    # for item in m:
-    #     print('K:', item.key, 'V:', item.value)
-    #
-    # print("\nPDF - __iter__(), __next__() example 2")
-    # print("---------------------")
-    # m = HashMap(10, hash_function_2)
-    # for i in range(5):
-    #     m.put(str(i), str(i * 24))
-    # m.remove('0')
-    # m.remove('4')
-    # print(m)
-    # for item in m:
-    #     print('K:', item.key, 'V:', item.value)
+
+    print("\nPDF - __iter__(), __next__() example 1")
+    print("---------------------")
+    m = HashMap(10, hash_function_1)
+    for i in range(5):
+        m.put(str(i), str(i * 10))
+    print(m)
+    for item in m:
+        print('K:', item.key, 'V:', item.value)
+
+    print("\nPDF - __iter__(), __next__() example 2")
+    print("---------------------")
+    m = HashMap(10, hash_function_2)
+    for i in range(5):
+        m.put(str(i), str(i * 24))
+    m.remove('0')
+    m.remove('4')
+    print(m)
+    for item in m:
+        print('K:', item.key, 'V:', item.value)
