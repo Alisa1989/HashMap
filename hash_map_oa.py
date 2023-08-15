@@ -86,7 +86,7 @@ class HashMap:
 
     # ------------------------------------------------------------------ #
 
-    def put(self, key: str, value: object) -> None:     # Passes local tests
+    def put(self, key: str, value: object) -> None:
         """
         Receives a key and value pair
         Adds the pair to the hash map
@@ -98,7 +98,7 @@ class HashMap:
         j = 0
         mapped_index = (hashed_key + j**2) % self._capacity
 
-        while self._buckets[mapped_index] is not None:     # while the slot is full
+        while self._buckets[mapped_index] is not None:     # while slot is full
             if self._buckets[mapped_index].key == key:          # key exists
                 self._buckets[mapped_index].value = value
                 if self._buckets[mapped_index].is_tombstone:
@@ -113,7 +113,7 @@ class HashMap:
         self._buckets[mapped_index] = new_entry
         self._size += 1
 
-    def table_load(self) -> float:  # Passes local tests
+    def table_load(self) -> float:
         """
         Returns the current hash table load factor
         """
@@ -136,8 +136,7 @@ class HashMap:
         Receives potential new_capacity
         Resizes hash map with new_capacity
         """
-        # if new_capacity < 1
-        if new_capacity < self._size:
+        if new_capacity < 1 or new_capacity < self._size:
             return
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
@@ -180,11 +179,12 @@ class HashMap:
         j = 0
         mapped_index = (hashed_key + j ** 2) % self._capacity
 
-        while self._buckets[mapped_index] is not None:  # while the slot is full
-            if self._buckets[mapped_index].key == key and not self._buckets[mapped_index].is_tombstone:  # key exists
+        while self._buckets[mapped_index] is not None:  # while slot is full
+            if self._buckets[mapped_index].key == key and not \
+                    self._buckets[mapped_index].is_tombstone:  # key exists
                 return True
             j += 1
-            mapped_index = (hashed_key + j ** 2) % self._capacity  # quadratic probing
+            mapped_index = (hashed_key + j ** 2) % self._capacity  # quadratic
         return False
 
     def remove(self, key: str) -> None:
@@ -241,7 +241,8 @@ class HashMap:
         Will return the next item in the hash map
         """
         # pass
-        while self._buckets[self._index] is None or self._buckets[self._index].is_tombstone:
+        while self._buckets[self._index] is None or \
+                self._buckets[self._index].is_tombstone:
             self._index += 1
             if self._index >= self._capacity:
                 raise StopIteration

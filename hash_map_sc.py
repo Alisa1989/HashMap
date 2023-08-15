@@ -100,7 +100,7 @@ class HashMap:
 
         mapped_index = self._hash_function(key) % self._capacity
 
-        for i in self._buckets[mapped_index]:           # if the key exists substitute the value
+        for i in self._buckets[mapped_index]:
             if i.key == key:
                 i.value = value
                 return
@@ -134,7 +134,7 @@ class HashMap:
             self._buckets.append(LinkedList())
         self._size = 0
 
-    def resize_table(self, new_capacity: int) -> None:          # PASSES local tests
+    def resize_table(self, new_capacity: int) -> None:
         """
         Receives new_capacity
         Changes the capacity of the internal hash table
@@ -167,7 +167,7 @@ class HashMap:
         # # OPTION 2
         # transfer over key/values and rehash
         # copy
-        existing_pairs = self.get_keys_and_values()              # too expensive
+        existing_pairs = self.get_keys_and_values()
         # change size
         self._capacity = new_capacity
         self._size = 0
@@ -176,10 +176,9 @@ class HashMap:
             self._buckets.append(LinkedList())
 
         for i in range(existing_pairs.length()):
-            # print("in resize table, key:", existing_pairs[i][0], "value:", existing_pairs[i][1])
             self.put(existing_pairs[i][0], existing_pairs[i][1])
 
-    def get(self, key: str):    # PASSES LOCAL TESTS
+    def get(self, key: str):
         """
         Receives key
         Returns value associated with the given key or None
@@ -193,7 +192,7 @@ class HashMap:
                 return j.value
         return None
 
-    def contains_key(self, key: str) -> bool:   # PASSES LOCAL TESTS
+    def contains_key(self, key: str) -> bool:
         """
         Receives a key
         Returns True if the given key is in the hash map, otherwise it returns False
@@ -207,7 +206,7 @@ class HashMap:
             return True
         return False
 
-    def remove(self, key: str) -> None:     # PASSES LOCAL TESTS
+    def remove(self, key: str) -> None:
         """
         Receives a key
         Removes the key and associated value from the hash map
@@ -218,7 +217,7 @@ class HashMap:
                 self._buckets[mapped_index].remove(key)
                 self._size -= 1
 
-    def get_keys_and_values(self) -> DynamicArray:      # PASSES LOCAL TESTS
+    def get_keys_and_values(self) -> DynamicArray:
         """
         Returns a dynamic array where each index contains a tuple of a
         key/value pair stored in the hash map
@@ -228,7 +227,6 @@ class HashMap:
         for index in range(self._capacity):
             if self._buckets[index].length() != 0:
                 for j in self._buckets[index]:
-                    # print(" j = ", j, " k = ", j.key, " v= ", j.value)
                     new_array.append((j.key, j.value))
         return new_array
 
