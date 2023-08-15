@@ -201,6 +201,7 @@ class HashMap:
             if self._buckets[mapped_index].key == key and not \
                     self._buckets[mapped_index].is_tombstone:  # key exists
                 self._buckets[mapped_index].is_tombstone = True
+                self._size -= 1
                 return
             j += 1
             mapped_index = (hashed_key + j ** 2) % self._capacity  # quadratic
@@ -394,15 +395,15 @@ if __name__ == "__main__":
     #     result &= not m.contains_key(str(key + 1))
     # print(result)
     #
-    # print("\nPDF - remove example 1")
-    # print("----------------------")
-    # m = HashMap(53, hash_function_1)
-    # print(m.get('key1'))
-    # m.put('key1', 10)
-    # print(m.get('key1'))
-    # m.remove('key1')
-    # print(m.get('key1'))
-    # m.remove('key4')
+    print("\nPDF - remove example 1")
+    print("----------------------")
+    m = HashMap(53, hash_function_1)
+    print(m.get('key1'))
+    m.put('key1', 10)
+    print(m.get('key1'))
+    m.remove('key1')
+    print(m.get('key1'))
+    m.remove('key4')
     #
     # print("\nPDF - clear example 1")
     # print("---------------------")
